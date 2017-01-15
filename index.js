@@ -19,6 +19,12 @@ bot.on('message', function(event) {
     });
   }
 });
+setTimeout(function(){
+	var userId = 'U83132b951316aa0a50d8003b1f638055';
+	var sendMsg = 'hello~ XD';
+	bot.push(userId,sendMsg);
+	console.log('send: '+sendMsg);
+},5000);
 
 const app = express();
 const linebotParser = bot.parser();
