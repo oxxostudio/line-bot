@@ -14,8 +14,8 @@ var timer, timer2, jp;
 var pm = [];
 
 _getJSON();
-_japan();
 _bot();
+_japan();
 
 const app = express();
 const linebotParser = bot.parser();
@@ -40,8 +40,8 @@ function _bot() {
             replyMsg = '請輸入正確的地點';
           }
         });
-      }else if(msg.indexOf('日幣') != -1){
-      	replyMsg = jp;
+      } else if (msg.indexOf('日幣') != -1) {
+        replyMsg = jp;
       }
       if (replyMsg == '') {
         replyMsg = '不知道「' + msg + '」是什麼意思 :p';
@@ -83,6 +83,9 @@ function _japan() {
       var target = $(".rate-content-sight.text-right.print_hide");
       console.log(target[15].children[0].data);
       jp = target[15].children[0].data;
+      if (jp < 0.28) {
+        bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
+      }
       timer2 = setInterval(_japan, 120000);
     }
   });
