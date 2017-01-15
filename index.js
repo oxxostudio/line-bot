@@ -1,6 +1,8 @@
 var linebot = require('linebot');
 var express = require('express');
 var getJSON = require('get-json');
+var request = require("request");
+var cheerio = require("cheerio");
 
 var bot = linebot({
   channelId: '1496768068',
@@ -8,11 +10,13 @@ var bot = linebot({
   channelAccessToken: 'FjXhBnfpEGVOtDrR/hPjw7l0y3Vaq9Y7rV4eY5ydSwlB5W6iPy9wflTjyd+Ts7TP9XTsv7Lzluc6GPDotXQrc6VXw55J0+iAwFQokhtfEp6Y33y+XrVrL94BZCJ2bfUWORQxmlrsneRHpb93XECoFAdB04t89/1O/w1cDnyilFU='
 });
 
-var timer;
+var timer, timer2, jp;
 var pm = [];
-_getJSON();
 
+_getJSON();
+_japan();
 _bot();
+
 const app = express();
 const linebotParser = bot.parser();
 app.post('/', linebotParser);
@@ -36,6 +40,8 @@ function _bot() {
             replyMsg = '請輸入正確的地點';
           }
         });
+      }else if(msg.indexOf('日幣') != -1){
+      	replyMsg = jp;
       }
       if (replyMsg == '') {
         replyMsg = '不知道「' + msg + '」是什麼意思 :p';
@@ -62,4 +68,22 @@ function _getJSON() {
     });
   });
   timer = setInterval(_getJSON, 1800000); //每半小時抓取一次新資料
+}
+
+function _japan() {
+  clearTimeout(timer2);
+  request({
+    url: "http://rate.bot.com.tw/Pages/Static/UIP003.zh-TW.htm",
+    method: "GET"
+  }, function(error, response, body) {
+    if (error || !body) {
+      return;
+    } else {
+      var $ = cheerio.load(body);
+      var target = $(".rate-content-sight.text-right.print_hide");
+      console.log(target[15].children[0].data);
+      jp = target[15].children[0].data;
+      timer2 = setInterval(_japan, 120000);
+    }
+  });
 }
