@@ -83,9 +83,9 @@ function _japan() {
       var target = $(".rate-content-sight.text-right.print_hide");
       console.log(target[15].children[0].data);
       jp = target[15].children[0].data;
-      if (jp < 0.28) {
-        bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
-      }
+      // if (jp < 0.28) {
+      //   bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
+      // }
       timer2 = setInterval(_japan, 120000);
     }
   });
