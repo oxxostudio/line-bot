@@ -36,10 +36,11 @@ function _bot() {
         pm.forEach(function(e, i) {
           if (msg.indexOf(e[0]) != -1) {
             replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1];
-          } else {
-            replyMsg = '請輸入正確的地點';
           }
         });
+        if (replyMsg == '') {
+          replyMsg = '請輸入正確的地點';
+        }
       } else if (msg.indexOf('日幣') != -1) {
         replyMsg = jp;
       }
