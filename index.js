@@ -14,6 +14,7 @@ var bot = linebot({
 var timer, timer2, timer3;
 var jp;
 var pm = [];
+var r = 0;
 
 _getJSON();
 _bot();
@@ -84,12 +85,15 @@ function _japan() {
       return;
     } else {
       var $ = cheerio.load(body);
-      var target = $(".rate-content-sight.text-right.print_hide");
+      var target = $(".rate-content-cash.text-right.print_hide");
       console.log(target[15].children[0].data);
       jp = target[15].children[0].data;
-      // if (jp < 0.28) {
-      //   bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
-      // }
+      if (jp < 0.277 && r < 1) {
+      	r = 1;
+        bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
+      }else{
+      	r = 0;
+      }
       timer2 = setInterval(_japan, 120000);
     }
   });
