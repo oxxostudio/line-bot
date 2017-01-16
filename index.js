@@ -3,7 +3,7 @@ var express = require('express');
 var getJSON = require('get-json');
 var request = require("request");
 var cheerio = require("cheerio");
-var http = require("http");
+var httpp = require("http");
 
 var bot = linebot({
   channelId: '1496768068',
@@ -11,7 +11,8 @@ var bot = linebot({
   channelAccessToken: 'FjXhBnfpEGVOtDrR/hPjw7l0y3Vaq9Y7rV4eY5ydSwlB5W6iPy9wflTjyd+Ts7TP9XTsv7Lzluc6GPDotXQrc6VXw55J0+iAwFQokhtfEp6Y33y+XrVrL94BZCJ2bfUWORQxmlrsneRHpb93XECoFAdB04t89/1O/w1cDnyilFU='
 });
 
-var timer, timer2, jp;
+var timer, timer2, timer3;
+var jp;
 var pm = [];
 
 _getJSON();
@@ -95,8 +96,8 @@ function _japan() {
 }
 
 function _preventSleeping() {
-  setInterval(function() {
-    http.get('https://oxxolinebot.herokuapp.com/');
-    console.log('awake');
-  }, 300000);
+  clearTimeout(timer3);
+  httpp.get('http://oxxolinebot.herokuapp.com/');
+  console.log('awake');
+  timer3 = setInterval(_preventSleeping, 300000);
 }
