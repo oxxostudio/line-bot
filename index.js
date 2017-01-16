@@ -3,6 +3,7 @@ var express = require('express');
 var getJSON = require('get-json');
 var request = require("request");
 var cheerio = require("cheerio");
+var http = require("http");
 
 var bot = linebot({
   channelId: '1496768068',
@@ -16,6 +17,7 @@ var pm = [];
 _getJSON();
 _bot();
 _japan();
+_preventSleeping();
 
 const app = express();
 const linebotParser = bot.parser();
@@ -90,4 +92,11 @@ function _japan() {
       timer2 = setInterval(_japan, 120000);
     }
   });
+}
+
+function _preventSleeping() {
+  setInterval(function() {
+    http.get('https://oxxolinebot.herokuapp.com/');
+    console.log('awake');
+  }, 300000);
 }
