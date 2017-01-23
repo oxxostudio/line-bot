@@ -15,6 +15,14 @@ var timer;
 var jp;
 var pm = [];
 var botEvent;
+var replyMsg;
+var words = [
+  ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', 'PM10', 'pm10'],
+  ['日幣', '日圓', '日元']
+];
+var a0 = 0;
+var a1 = -1;
+var a2 = -1;
 
 _bot();
 _preventSleeping();
@@ -34,32 +42,26 @@ function _bot() {
     botEvent = event;
     if (event.message.type == 'text') {
       var msg = event.message.text;
-      var replyMsg = '';
-      if (msg.indexOf('PM2.5') != -1) {
-        getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
-          response.forEach(function(e, i) {
-            pm[i] = [];
-            pm[i][0] = e.SiteName;
-            pm[i][1] = e['PM2.5'] * 1;
-            pm[i][2] = e.PM10 * 1;
-          });
-          pm.forEach(function(e, i) {
-            if (msg.indexOf(e[0]) != -1) {
-              replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1];
+      replyMsg = '';
+
+      words.forEach(function(row) {
+        a1 = a1 + 1;
+        row.forEach(function(col) {
+          a2 = a2 + 1;
+          if (msg.indexOf(col) != -1) {
+            a0 = 1;
+            if (a1 == 0) {
+              _pm25(msg);
+            } else if (a1 == 1) {
+              _japan();
             }
-          });
-          if (replyMsg == '') {
-            replyMsg = '請輸入正確的地點';
           }
-          event.reply(replyMsg).then(function(data) {
-            console.log(replyMsg);
-          }).catch(function(error) {
-            console.log('error');
-          });
         });
-      } else if (msg.indexOf('日幣') != -1) {
-      	_japan();
-      } else {
+      });
+
+      if (a0 == 0) {
+        a1 = -1;
+        a2 = -1;
         replyMsg = '不知道「' + msg + '」是什麼意思 :p';
         event.reply(replyMsg).then(function(data) {
           console.log(replyMsg);
@@ -70,6 +72,33 @@ function _bot() {
     }
   });
 
+}
+
+function _pm25(msg) {
+  getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
+    response.forEach(function(e, i) {
+      pm[i] = [];
+      pm[i][0] = e.SiteName;
+      pm[i][1] = e['PM2.5'] * 1;
+      pm[i][2] = e.PM10 * 1;
+    });
+    pm.forEach(function(e) {
+      if (msg.indexOf(e[0]) != -1) {
+        replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1] + '，PM10 數值為 ' + e[2];
+      }
+    });
+    if (replyMsg == '') {
+      replyMsg = '請輸入正確的地點';
+    }
+    botEvent.reply(replyMsg).then(function(data) {
+      console.log(replyMsg);
+    }).catch(function(error) {
+      console.log('error');
+    });
+    a0 = 0;
+    a1 = -1;
+    a2 = -1;
+  });
 }
 
 function _japan() {
@@ -88,6 +117,9 @@ function _japan() {
       }).catch(function(error) {
         console.log('error');
       });
+      a0 = 0;
+      a1 = -1;
+      a2 = -1;
     }
   });
 }
