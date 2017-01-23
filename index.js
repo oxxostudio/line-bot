@@ -16,10 +16,14 @@ var bot = linebot({
 var timer;
 var jp;
 var pm = [];
+
 var botEvent;
 var replyMsg;
+var userId;
+
 var deviceId = '10RrGGer';
 var rgbled;
+
 var words = [{
   "name": "pm25",
   "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10']
@@ -57,6 +61,8 @@ var server = app.listen(process.env.PORT || 8080, function() {
 function _bot() {
   bot.on('message', function(event) {
     botEvent = event;
+    userId = event.source.userId;
+    console.log(userId);
     if (event.message.type == 'text') {
       var msg = event.message.text;
       replyMsg = '';
@@ -66,18 +72,10 @@ function _bot() {
           if (msg.indexOf(col) != -1) {
             a0 = 1;
             if (row.name == 'pm25' || row.name == 'pm25Location') {
-              botEvent.reply('資料查詢中...').then(function(data) {
-                console.log('資料查詢中...');
-              }).catch(function(error) {
-                console.log('error');
-              });
+            	bot.push(userId, '資料查詢中...');
               _pm25(msg);
             } else if (row.name == 'japan') {
-              botEvent.reply('資料查詢中...').then(function(data) {
-                console.log('資料查詢中...');
-              }).catch(function(error) {
-                console.log('error');
-              });
+            	bot.push(userId, '資料查詢中...');
               _japan();
             } else if (row.name == 'device') {
               _deviceId(msg);
