@@ -19,6 +19,7 @@ var pm = [];
 var botEvent;
 var replyMsg;
 var deviceId = '10RrGGer';
+var rgbled;
 var words = [{
   "name": "pm25",
   "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10']
@@ -34,6 +35,9 @@ var words = [{
 }, {
   "name": "device",
   "content": ['裝置ID:', '裝置id:', '裝置 ID:', '裝置 id:', 'device id:', 'Device id:']
+}, {
+  "name": "online",
+  "content": ['裝置連線']
 }];
 var a0 = 0;
 
@@ -69,6 +73,8 @@ function _bot() {
               _deviceId(msg);
             } else if (row.name == 'color') {
               _webduino(msg);
+            } else if (row.name == 'online') {
+              _webduinoOnline();
             }
           }
         });
@@ -163,7 +169,7 @@ function _deviceId(msg) {
   if (d) {
     deviceId = d;
   }
-  replyMsg = '新的 Device ID [ '+d+' ] 設定完成';
+  replyMsg = '新的 Device ID [ ' + d + ' ] 設定完成';
   botEvent.reply(replyMsg).then(function(data) {
     console.log(replyMsg);
   }).catch(function(error) {
@@ -171,8 +177,7 @@ function _deviceId(msg) {
   });
 }
 
-function _webduino(msg) {
-  var rgbled;
+function _webduinoOnline() {
   boardReady({
     board: 'Smart',
     device: deviceId,
@@ -181,30 +186,39 @@ function _webduino(msg) {
     board.systemReset();
     board.samplingInterval = 50;
     rgbled = getRGBLedCathode(board, 15, 12, 13);
-    if (msg.indexOf('黃色')!=-1) {
-      rgbled.setColor('#ffff00');
-      replyMsg = '已經發出黃色光...';
-    } else if (msg.indexOf('紅色')!=-1) {
-      rgbled.setColor('#ff0000');
-      replyMsg = '已經發出紅色光...';
-    } else if (msg.indexOf('綠色')!=-1) {
-      rgbled.setColor('#00ff00');
-      replyMsg = '已經發出綠色光...';
-    } else if (msg.indexOf('藍色')!=-1) {
-      rgbled.setColor('#0000ff');
-      replyMsg = '已經發出藍色光...';
-    } else if (msg.indexOf('開燈')!=-1) {
-      rgbled.setColor('#ffffff');
-      replyMsg = '開燈囉！';
-    } else if (msg.indexOf('關燈')!=-1) {
-      rgbled.setColor('#000000');
-      replyMsg = '關起來了！';
-    }
+    replyMsg = '裝置已上線 ( ' + deviceId + ' )';
     botEvent.reply(replyMsg).then(function(data) {
       console.log(replyMsg);
     }).catch(function(error) {
       console.log('error');
     });
+  });
+}
+
+function _webduino(msg) {
+  if (msg.indexOf('黃色') != -1) {
+    rgbled.setColor('#ffff00');
+    replyMsg = '已經發出黃色光...';
+  } else if (msg.indexOf('紅色') != -1) {
+    rgbled.setColor('#ff0000');
+    replyMsg = '已經發出紅色光...';
+  } else if (msg.indexOf('綠色') != -1) {
+    rgbled.setColor('#00ff00');
+    replyMsg = '已經發出綠色光...';
+  } else if (msg.indexOf('藍色') != -1) {
+    rgbled.setColor('#0000ff');
+    replyMsg = '已經發出藍色光...';
+  } else if (msg.indexOf('開燈') != -1) {
+    rgbled.setColor('#ffffff');
+    replyMsg = '開燈囉！';
+  } else if (msg.indexOf('關燈') != -1) {
+    rgbled.setColor('#000000');
+    replyMsg = '關起來了！';
+  }
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
   });
 }
 
