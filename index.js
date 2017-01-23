@@ -42,6 +42,9 @@ var words = [{
 }, {
   "name": "online",
   "content": ['裝置連線']
+}, {
+  "name": "talk1",
+  "content": ['妳好', '你好', '哈囉', 'hi', 'hello', '您好', '嗨']
 }];
 var a0 = 0;
 
@@ -72,10 +75,10 @@ function _bot() {
           if (msg.indexOf(col) != -1) {
             a0 = 1;
             if (row.name == 'pm25' || row.name == 'pm25Location') {
-            	bot.push(userId, '資料查詢中...');
+              bot.push(userId, '資料查詢中...');
               _pm25(msg);
             } else if (row.name == 'japan') {
-            	bot.push(userId, '資料查詢中...');
+              bot.push(userId, '資料查詢中...');
               _japan();
             } else if (row.name == 'device') {
               _deviceId(msg);
@@ -83,6 +86,8 @@ function _bot() {
               _webduino(msg);
             } else if (row.name == 'online') {
               _webduinoOnline();
+            } else if (row.name == 'talk1') {
+              _talk1();
             }
           }
         });
@@ -221,6 +226,19 @@ function _webduino(msg) {
     rgbled.setColor('#000000');
     replyMsg = '關起來了！';
   }
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
+  });
+}
+
+function _talk1() {
+  var reply1 = ['你好，', '您好，', '哈囉，'];
+  var reply2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？','有什麼事嗎？'];
+  var r1 = Math.floor(Math.random() * (reply1.length));
+  var r2 = Math.floor(Math.random() * (reply2.length));
+  replyMsg = reply1[r1] + reply2[r2];
   botEvent.reply(replyMsg).then(function(data) {
     console.log(replyMsg);
   }).catch(function(error) {
