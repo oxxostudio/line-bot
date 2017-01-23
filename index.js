@@ -76,15 +76,17 @@ function _bot() {
 }
 
 function _pm25(msg) {
-	//http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa
-	//http://opendata2.epa.gov.tw/AQX.json
+  //http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa
+  //http://opendata2.epa.gov.tw/AQX.json
   getJSON('http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa', function(error, response) {
     var location = '';
+    var aqi;
     response.Data.forEach(function(e, i) {
       pm[i] = [];
       pm[i][0] = e.SiteName;
-      pm[i][1] = e.PM25 * 1;
-      pm[i][2] = e.PM10 * 1;
+      pm[i][1] = e.AQI * 1;
+      pm[i][2] = e.PM25 * 1;
+      pm[i][3] = e.PM10 * 1;
       if (i < (response.Data.length - 1)) {
         location = location + pm[i][0] + ' , ';
       } else {
@@ -96,7 +98,18 @@ function _pm25(msg) {
     } else {
       pm.forEach(function(e) {
         if (msg.indexOf(e[0]) != -1) {
-          replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1] + '，PM10 數值為 ' + e[2];
+          if (e[1] < 51) {
+            aqi = '良好';
+          } else if (e[1] >= 51 && e[1] < 101) {
+            aqi = '普通';
+          } else if (e[1] >= 101 && e[1] < 151) {
+            aqi = '不健康';
+          } else if (e[1] >= 151 && e[1] < 201) {
+            aqi = '很不健康';
+          } else {
+            aqi = '危害';
+          }
+          replyMsg = e[0] + '的空氣品質「' + aqi + '」( AQI = ' + e[1] + '，PM2.5 = ' + e[2] + '，PM10 = ' + e[3] + ' )';
         }
       });
     }
