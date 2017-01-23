@@ -11,10 +11,10 @@ var bot = linebot({
   channelAccessToken: 'FjXhBnfpEGVOtDrR/hPjw7l0y3Vaq9Y7rV4eY5ydSwlB5W6iPy9wflTjyd+Ts7TP9XTsv7Lzluc6GPDotXQrc6VXw55J0+iAwFQokhtfEp6Y33y+XrVrL94BZCJ2bfUWORQxmlrsneRHpb93XECoFAdB04t89/1O/w1cDnyilFU='
 });
 
-var timer, timer2, timer3;
+var timer;
 var jp;
 var pm = [];
-var r = 0;
+var botEvent;
 
 _bot();
 _preventSleeping();
@@ -31,6 +31,7 @@ var server = app.listen(process.env.PORT || 8080, function() {
 
 function _bot() {
   bot.on('message', function(event) {
+    botEvent = event;
     if (event.message.type == 'text') {
       var msg = event.message.text;
       var replyMsg = '';
@@ -57,25 +58,8 @@ function _bot() {
           });
         });
       } else if (msg.indexOf('日幣') != -1) {
-        request({
-          url: "http://rate.bot.com.tw/Pages/Static/UIP003.zh-TW.htm",
-          method: "GET"
-        }, function(error, response, body) {
-          if (error || !body) {
-            return;
-          } else {
-            var $ = cheerio.load(body);
-            var target = $(".rate-content-cash.text-right.print_hide");
-            console.log(target[15].children[0].data);
-            replyMsg = target[15].children[0].data;
-            event.reply(replyMsg).then(function(data) {
-              console.log(replyMsg);
-            }).catch(function(error) {
-              console.log('error');
-            });
-          }
-        });
-      }else{
+      	_japan();
+      } else {
         replyMsg = '不知道「' + msg + '」是什麼意思 :p';
         event.reply(replyMsg).then(function(data) {
           console.log(replyMsg);
@@ -88,9 +72,29 @@ function _bot() {
 
 }
 
+function _japan() {
+  request({
+    url: "http://rate.bot.com.tw/Pages/Static/UIP003.zh-TW.htm",
+    method: "GET"
+  }, function(error, response, body) {
+    if (error || !body) {
+      return;
+    } else {
+      var $ = cheerio.load(body);
+      var target = $(".rate-content-cash.text-right.print_hide");
+      replyMsg = target[15].children[0].data;
+      botEvent.reply(replyMsg).then(function(data) {
+        console.log(replyMsg);
+      }).catch(function(error) {
+        console.log('error');
+      });
+    }
+  });
+}
+
 function _preventSleeping() {
-  clearTimeout(timer3);
+  clearTimeout(timer);
   httpp.get('http://oxxolinebot.herokuapp.com/');
   console.log('awake');
-  timer3 = setInterval(_preventSleeping, 300000);
+  timer = setInterval(_preventSleeping, 300000);
 }
