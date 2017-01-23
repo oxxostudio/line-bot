@@ -16,14 +16,17 @@ var jp;
 var pm = [];
 var botEvent;
 var replyMsg;
-var words = [
-  ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10'],
-  ['空氣監測站'],
-  ['日幣', '日圓', '日元']
-];
+var words = [{
+  "name": "pm25",
+  "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10']
+}, {
+  "name": "pm25Location",
+  "content": ['空氣監測站']
+}, {
+  "name": "japan",
+  "content": ['日幣', '日圓', '日元']
+}];
 var a0 = 0;
-var a1 = -1;
-var a2 = -1;
 
 _bot();
 _preventSleeping();
@@ -46,14 +49,12 @@ function _bot() {
       replyMsg = '';
 
       words.forEach(function(row) {
-        a1 = a1 + 1;
-        row.forEach(function(col) {
-          a2 = a2 + 1;
+        row.content.forEach(function(col) {
           if (msg.indexOf(col) != -1) {
-            a0 = 1;
-            if (a1 == 0 || a1 == 1) {
+          	a0 = 1;
+            if (row.name == 'pm25' || row.name == 'pm25Location') {
               _pm25(msg);
-            } else if (a1 == 2) {
+            } else if (row.name == 'japan') {
               _japan();
             }
           }
@@ -61,8 +62,6 @@ function _bot() {
       });
 
       if (a0 == 0) {
-        a1 = -1;
-        a2 = -1;
         replyMsg = '不知道「' + msg + '」是什麼意思 :p';
         event.reply(replyMsg).then(function(data) {
           console.log(replyMsg);
@@ -122,8 +121,6 @@ function _pm25(msg) {
       console.log('error');
     });
     a0 = 0;
-    a1 = -1;
-    a2 = -1;
   });
 }
 
@@ -144,8 +141,6 @@ function _japan() {
         console.log('error');
       });
       a0 = 0;
-      a1 = -1;
-      a2 = -1;
     }
   });
 }
