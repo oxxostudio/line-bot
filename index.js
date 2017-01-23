@@ -17,7 +17,8 @@ var pm = [];
 var botEvent;
 var replyMsg;
 var words = [
-  ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', 'PM10', 'pm10'],
+  ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10'],
+  ['空氣監測站'],
   ['日幣', '日圓', '日元']
 ];
 var a0 = 0;
@@ -50,9 +51,9 @@ function _bot() {
           a2 = a2 + 1;
           if (msg.indexOf(col) != -1) {
             a0 = 1;
-            if (a1 == 0) {
+            if (a1 == 0 || a1 == 1) {
               _pm25(msg);
-            } else if (a1 == 1) {
+            } else if (a1 == 2) {
               _japan();
             }
           }
@@ -76,19 +77,29 @@ function _bot() {
 
 function _pm25(msg) {
   getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
+    var location = '';
     response.forEach(function(e, i) {
       pm[i] = [];
       pm[i][0] = e.SiteName;
       pm[i][1] = e['PM2.5'] * 1;
       pm[i][2] = e.PM10 * 1;
-    });
-    pm.forEach(function(e) {
-      if (msg.indexOf(e[0]) != -1) {
-        replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1] + '，PM10 數值為 ' + e[2];
+      if (i < (response.length - 1)) {
+        location = location + pm[i][0] + ' , ';
+      } else {
+        location = location + pm[i][0];
       }
     });
+    if (msg.indexOf('空氣監測站') != -1) {
+      replyMsg = location;
+    } else {
+      pm.forEach(function(e) {
+        if (msg.indexOf(e[0]) != -1) {
+          replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1] + '，PM10 數值為 ' + e[2];
+        }
+      });
+    }
     if (replyMsg == '') {
-      replyMsg = '請輸入正確的地點';
+      replyMsg = '請輸入正確的地點，或輸入「空氣監測站」查詢地點';
     }
     botEvent.reply(replyMsg).then(function(data) {
       console.log(replyMsg);
