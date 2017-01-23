@@ -66,8 +66,18 @@ function _bot() {
           if (msg.indexOf(col) != -1) {
             a0 = 1;
             if (row.name == 'pm25' || row.name == 'pm25Location') {
+              // botEvent.reply('資料查詢中...').then(function(data) {
+              //   console.log('資料查詢中...');
+              // }).catch(function(error) {
+              //   console.log('error');
+              // });
               _pm25(msg);
             } else if (row.name == 'japan') {
+              // botEvent.reply('資料查詢中...').then(function(data) {
+              //   console.log('資料查詢中...');
+              // }).catch(function(error) {
+              //   console.log('error');
+              // });
               _japan();
             } else if (row.name == 'device') {
               _deviceId(msg);
