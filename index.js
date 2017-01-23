@@ -76,14 +76,16 @@ function _bot() {
 }
 
 function _pm25(msg) {
-  getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
+	//http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa
+	//http://opendata2.epa.gov.tw/AQX.json
+  getJSON('http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa', function(error, response) {
     var location = '';
-    response.forEach(function(e, i) {
+    response.Data.forEach(function(e, i) {
       pm[i] = [];
       pm[i][0] = e.SiteName;
-      pm[i][1] = e['PM2.5'] * 1;
+      pm[i][1] = e.PM25 * 1;
       pm[i][2] = e.PM10 * 1;
-      if (i < (response.length - 1)) {
+      if (i < (response.Data.length - 1)) {
         location = location + pm[i][0] + ' , ';
       } else {
         location = location + pm[i][0];
