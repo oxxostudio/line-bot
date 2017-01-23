@@ -16,9 +16,7 @@ var jp;
 var pm = [];
 var r = 0;
 
-_getJSON();
 _bot();
-_japan();
 _preventSleeping();
 
 const app = express();
@@ -37,66 +35,57 @@ function _bot() {
       var msg = event.message.text;
       var replyMsg = '';
       if (msg.indexOf('PM2.5') != -1) {
-        pm.forEach(function(e, i) {
-          if (msg.indexOf(e[0]) != -1) {
-            replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1];
+        getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
+          response.forEach(function(e, i) {
+            pm[i] = [];
+            pm[i][0] = e.SiteName;
+            pm[i][1] = e['PM2.5'] * 1;
+            pm[i][2] = e.PM10 * 1;
+          });
+          pm.forEach(function(e, i) {
+            if (msg.indexOf(e[0]) != -1) {
+              replyMsg = e[0] + '的 PM2.5 數值為 ' + e[1];
+            }
+          });
+          if (replyMsg == '') {
+            replyMsg = '請輸入正確的地點';
+          }
+          event.reply(replyMsg).then(function(data) {
+            console.log(replyMsg);
+          }).catch(function(error) {
+            console.log('error');
+          });
+        });
+      } else if (msg.indexOf('日幣') != -1) {
+        request({
+          url: "http://rate.bot.com.tw/Pages/Static/UIP003.zh-TW.htm",
+          method: "GET"
+        }, function(error, response, body) {
+          if (error || !body) {
+            return;
+          } else {
+            var $ = cheerio.load(body);
+            var target = $(".rate-content-cash.text-right.print_hide");
+            console.log(target[15].children[0].data);
+            replyMsg = target[15].children[0].data;
+            event.reply(replyMsg).then(function(data) {
+              console.log(replyMsg);
+            }).catch(function(error) {
+              console.log('error');
+            });
           }
         });
-        if (replyMsg == '') {
-          replyMsg = '請輸入正確的地點';
-        }
-      } else if (msg.indexOf('日幣') != -1) {
-        replyMsg = jp;
-      }
-      if (replyMsg == '') {
-        replyMsg = '不知道「' + msg + '」是什麼意思 :p';
-      }
-
-      event.reply(replyMsg).then(function(data) {
-        console.log(replyMsg);
-      }).catch(function(error) {
-        console.log('error');
-      });
-    }
-  });
-
-}
-
-function _getJSON() {
-  clearTimeout(timer);
-  getJSON('http://opendata2.epa.gov.tw/AQX.json', function(error, response) {
-    response.forEach(function(e, i) {
-      pm[i] = [];
-      pm[i][0] = e.SiteName;
-      pm[i][1] = e['PM2.5'] * 1;
-      pm[i][2] = e.PM10 * 1;
-    });
-  });
-  timer = setInterval(_getJSON, 1800000); //每半小時抓取一次新資料
-}
-
-function _japan() {
-  clearTimeout(timer2);
-  request({
-    url: "http://rate.bot.com.tw/Pages/Static/UIP003.zh-TW.htm",
-    method: "GET"
-  }, function(error, response, body) {
-    if (error || !body) {
-      return;
-    } else {
-      var $ = cheerio.load(body);
-      var target = $(".rate-content-cash.text-right.print_hide");
-      console.log(target[15].children[0].data);
-      jp = target[15].children[0].data;
-      if (jp < 0.277 && r < 1) {
-      	r = 1;
-        bot.push('U83132b951316aa0a50d8003b1f638055', '現在日幣 ' + jp + '，該買啦！');
       }else{
-      	r = 0;
+        replyMsg = '不知道「' + msg + '」是什麼意思 :p';
+        event.reply(replyMsg).then(function(data) {
+          console.log(replyMsg);
+        }).catch(function(error) {
+          console.log('error');
+        });
       }
-      timer2 = setInterval(_japan, 120000);
     }
   });
+
 }
 
 function _preventSleeping() {
