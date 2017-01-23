@@ -14,6 +14,8 @@
     "get-json": "0.0.3",
     "http": "0.0.0",
     "linebot": "^1.2.1",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "webduino-blockly": "0.0.10",
+    "webduino-js": "^0.4.10"
   }
 }
