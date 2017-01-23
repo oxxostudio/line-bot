@@ -60,7 +60,7 @@ function _bot() {
     if (event.message.type == 'text') {
       var msg = event.message.text;
       replyMsg = '';
-
+      a0 = 0;
       words.forEach(function(row) {
         row.content.forEach(function(col) {
           if (msg.indexOf(col) != -1) {
@@ -149,7 +149,6 @@ function _pm25(msg) {
     }).catch(function(error) {
       console.log('error');
     });
-    a0 = 0;
   });
 }
 
@@ -169,7 +168,6 @@ function _japan() {
       }).catch(function(error) {
         console.log('error');
       });
-      a0 = 0;
     }
   });
 }
