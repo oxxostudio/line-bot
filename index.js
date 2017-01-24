@@ -26,7 +26,7 @@ var rgbled;
 
 var words = [{
   "name": "pm25",
-  "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空汙', '空氣品質', 'PM10', 'pm10']
+  "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空污', '空汙', '空氣品質', 'PM10', 'pm10']
 }, {
   "name": "pm25Location",
   "content": ['空氣監測站']
@@ -35,16 +35,19 @@ var words = [{
   "content": ['日幣', '日圓', '日元']
 }, {
   "name": "color",
-  "content": ['紅色', '藍色', '綠色', '黃色', '關燈', '開燈']
+  "content": ['紅色', '藍色', '綠色', '黃色', '關燈', '開燈', 'red', 'blue', 'yellow', 'green', 'turn on', 'turn off']
 }, {
   "name": "device",
-  "content": ['裝置ID:', '裝置id:', '裝置 ID:', '裝置 id:', 'device id:', 'Device id:']
+  "content": ['裝置id:', '裝置 id:', 'device id:', 'deviceid']
 }, {
   "name": "online",
   "content": ['裝置連線']
 }, {
   "name": "talk1",
-  "content": ['妳好', '你好', '哈囉', 'hi', 'hello', '您好', '嗨']
+  "content": ['妳好', '你好', '哈囉', 'hi', 'hello', '您好', '嗨', '好久不見']
+}, {
+  "name": "talk2",
+  "content": ['早安', '午安', '晚安', '再見', '掰掰', 'bye', 'morning', 'night']
 }];
 var a0 = 0;
 
@@ -65,14 +68,13 @@ function _bot() {
   bot.on('message', function(event) {
     botEvent = event;
     userId = event.source.userId;
-    console.log(userId);
     if (event.message.type == 'text') {
       var msg = event.message.text;
       replyMsg = '';
       a0 = 0;
       words.forEach(function(row) {
         row.content.forEach(function(col) {
-          if (msg.indexOf(col) != -1) {
+          if (msg.indexOf(col.toLowerCase()) != -1) {
             a0 = 1;
             if (row.name == 'pm25' || row.name == 'pm25Location') {
               bot.push(userId, '資料查詢中...');
@@ -88,6 +90,8 @@ function _bot() {
               _webduinoOnline();
             } else if (row.name == 'talk1') {
               _talk1();
+            } else if (row.name == 'talk2') {
+              _talk2(msg);
             }
           }
         });
@@ -233,12 +237,42 @@ function _webduino(msg) {
   });
 }
 
+
+
+var reply1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~'];
+var reply2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
+
 function _talk1() {
-  var reply1 = ['你好，', '您好，', '哈囉，'];
-  var reply2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？','有什麼事嗎？'];
+
+  var r1 = Math.floor(Math.random() * (reply1.length));
+  var r2 = Math.floor(Math.random() * (reply2.length));
+
+  replyMsg = reply1[r1] + reply2[r2];
+
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
+  });
+}
+
+function _talk2(msg) {
+
+  if (msg.indexOf('早安') != -1) {
+    reply1 = reply1.concat(['早安，', '早安呦！', '早安您好，', '早上好，']);
+  } else if (msg.indexOf('午安') != -1) {
+    reply1 = reply1.concat(['午安，', '午安您好，', '午安呦！']);
+  } else if (msg.indexOf('晚安') != -1) {
+    reply1 = reply1.concat(['晚安，', '晚安您好，', '晚安呦！']);
+  } else if (msg.indexOf('再見') != -1 || msg.indexOf('掰掰') != -1 || msg.indexOf('bye') != -1) {
+    reply1 = reply1.concat(['再見囉！', '再會啦！', 'Bye~', '掰掰！']);
+    reply2 = ['有事再找我喔！', '祝你一切順心~', '下次再見 ^_^', '有空再聊喔~'];
+  }
+
   var r1 = Math.floor(Math.random() * (reply1.length));
   var r2 = Math.floor(Math.random() * (reply2.length));
   replyMsg = reply1[r1] + reply2[r2];
+
   botEvent.reply(replyMsg).then(function(data) {
     console.log(replyMsg);
   }).catch(function(error) {
