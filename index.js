@@ -115,7 +115,7 @@ function _bot() {
       });
 
       if (a0 == 0) {
-        replyMsg = '不知道「' + msg + '」是什麼意思 :p';
+        replyMsg = '不知道「' + msg0 + '」是什麼意思 :p';
         event.reply(replyMsg).then(function(data) {
           console.log(replyMsg);
         }).catch(function(error) {
