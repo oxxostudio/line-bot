@@ -125,16 +125,18 @@ function _bot() {
 function _pm25(msg) {
   //http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa
   //http://opendata2.epa.gov.tw/AQX.json
-  getJSON('http://taqm.epa.gov.tw/taqm/aqs.ashx?lang=tw&act=aqi-epa', function(error, response) {
+  //http://opendata.epa.gov.tw/ws/Data/REWIQA/?$orderby=SiteName&$skip=0&$top=1000&format=json
+  getJSON('http://opendata.epa.gov.tw/ws/Data/REWIQA/?$orderby=SiteName&$skip=0&$top=1000&format=json', function(error, response) {
     var location = '';
     var aqi;
-    response.Data.forEach(function(e, i) {
+    response.forEach(function(e, i) {
       pm[i] = [];
       pm[i][0] = e.SiteName;
       pm[i][1] = e.AQI * 1;
-      pm[i][2] = e.PM25 * 1;
+      pm[i][2] = e['PM2.5'] * 1;
       pm[i][3] = e.PM10 * 1;
-      if (i < (response.Data.length - 1)) {
+      pm[i][4] = e.Status;
+      if (i < (response.length - 1)) {
         location = location + pm[i][0] + ' , ';
       } else {
         location = location + pm[i][0];
@@ -145,18 +147,7 @@ function _pm25(msg) {
     } else {
       pm.forEach(function(e) {
         if (msg.indexOf(e[0]) != -1) {
-          if (e[1] < 51) {
-            aqi = '良好';
-          } else if (e[1] >= 51 && e[1] < 101) {
-            aqi = '普通';
-          } else if (e[1] >= 101 && e[1] < 151) {
-            aqi = '不健康';
-          } else if (e[1] >= 151 && e[1] < 201) {
-            aqi = '很不健康';
-          } else {
-            aqi = '危害';
-          }
-          replyMsg = e[0] + '的空氣品質「' + aqi + '」( AQI = ' + e[1] + '，PM2.5 = ' + e[2] + '，PM10 = ' + e[3] + ' )';
+          replyMsg = e[0] + '的空氣品質「' + e[4] + '」( AQI = ' + e[1] + '，PM2.5 = ' + e[2] + '，PM10 = ' + e[3] + ' )';
         }
       });
     }
