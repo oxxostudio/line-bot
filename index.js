@@ -49,6 +49,9 @@ var words = [{
 }, {
   "name": "talk2",
   "content": ['早安', '午安', '晚安', '再見', '掰掰', 'bye', 'morning', 'night']
+}, {
+  "name": "talk3",
+  "content": ['讚', '好棒', '厲害', '棒棒']
 }];
 var a0 = 0;
 
@@ -94,6 +97,8 @@ function _bot() {
               _talk1();
             } else if (row.name == 'talk2') {
               _talk2(msg);
+            } else if (row.name == 'talk3') {
+              _talk3();
             }
           }
         });
@@ -256,6 +261,7 @@ function _webduino(msg) {
 
 var all1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~', '嗨嗨，'];
 var all2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
+var all3 = ['謝謝啦！', '謝謝稱讚！', '謝謝你！'];
 
 function _talk1() {
 
@@ -298,6 +304,19 @@ function _talk2(msg) {
   });
 }
 
+function _talk3() {
+
+  var reply1 = all3;
+  var r1 = Math.floor(Math.random() * (reply1.length));
+
+  replyMsg = reply1[r1];
+
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
+  });
+}
 function _preventSleeping() {
   clearTimeout(timer);
   httpp.get('http://oxxolinebot.herokuapp.com/');
