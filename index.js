@@ -51,10 +51,13 @@ var words = [{
   "content": ['早安', '午安', '晚安', '再見', '掰掰', 'bye', 'morning', 'night']
 }, {
   "name": "talk3",
-  "content": ['讚', '好棒', '厲害', '棒棒', '太神', '好強']
+  "content": ['讚', '好棒', '厲害', '棒棒', '太神', '好強', '超棒', '帥喔']
 }, {
   "name": "talk4",
-  "content": ['謝謝', 'thx', 'thank', '感謝', '感恩', '感激']
+  "content": ['謝謝', 'thx', 'thank', '感謝', '感恩', '感激', '謝啦']
+}, {
+  "name": "talk5",
+  "content": ['哈哈', '嘿嘿', '喔哈', '哇哈', '嘻嘻', '呵呵', 'ㄎㄎ', '嘻哈', '揪黑', '揪嘿', '揪黑', '啾嘿', '呼呀', '呼呼']
 }];
 var a0 = 0;
 
@@ -104,6 +107,8 @@ function _bot() {
               _talk3();
             } else if (row.name == 'talk4') {
               _talk4();
+            } else if (row.name == 'talk5') {
+              _talk5();
             }
           }
         });
@@ -259,6 +264,7 @@ var all1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~', '嗨嗨，']
 var all2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
 var all3 = ['謝謝啦！', '謝謝稱讚！', '謝謝你！'];
 var all4 = ['不客氣~', '過獎啦！', '哪裡哪裡~'];
+var all5 = ['呵呵', '嘿嘿', 'ㄎㄎ', '嘻嘻', '喔哈', '^_^', '|O|', '啾嘿', '呼呀'];
 
 function _talk1() {
 
@@ -318,6 +324,20 @@ function _talk3() {
 function _talk4() {
 
   var reply1 = all4;
+  var r1 = Math.floor(Math.random() * (reply1.length));
+
+  replyMsg = reply1[r1];
+
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
+  });
+}
+
+function _talk5() {
+
+  var reply1 = all5;
   var r1 = Math.floor(Math.random() * (reply1.length));
 
   replyMsg = reply1[r1];
