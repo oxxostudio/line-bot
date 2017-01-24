@@ -26,7 +26,7 @@ var rgbled;
 
 var words = [{
   "name": "pm25",
-  "content": ['pm2.5', 'PM2.5', 'PM25', 'pm25', '空氣污染', '空污', '空汙', '空氣品質', 'PM10', 'pm10']
+  "content": ['pm2.5', 'pm25','pm 2.5','aqi', '空氣污染', '空污', '空汙', '空氣品質', 'pm10', 'pm 10']
 }, {
   "name": "pm25Location",
   "content": ['空氣監測站']
@@ -38,7 +38,7 @@ var words = [{
   "content": ['紅色', '藍色', '綠色', '黃色', '關燈', '開燈', 'red', 'blue', 'yellow', 'green', 'turn on', 'turn off']
 }, {
   "name": "device",
-  "content": ['裝置id:', '裝置 id:', 'device id:', 'deviceid']
+  "content": ['裝置id:', '裝置 id:', 'device id:', 'deviceid:']
 }, {
   "name": "online",
   "content": ['裝置連線']
@@ -69,12 +69,12 @@ function _bot() {
     botEvent = event;
     userId = event.source.userId;
     if (event.message.type == 'text') {
-      var msg = event.message.text;
+      var msg = event.message.text.toLowerCase();
       replyMsg = '';
       a0 = 0;
       words.forEach(function(row) {
         row.content.forEach(function(col) {
-          if (msg.indexOf(col.toLowerCase()) != -1) {
+          if (msg.indexOf(col) != -1) {
             a0 = 1;
             if (row.name == 'pm25' || row.name == 'pm25Location') {
               bot.push(userId, '資料查詢中...');
@@ -211,22 +211,22 @@ function _webduinoOnline() {
 }
 
 function _webduino(msg) {
-  if (msg.indexOf('黃色') != -1) {
+  if (msg.indexOf('黃色') != -1||msg.indexOf('yellow') != -1) {
     rgbled.setColor('#ffff00');
-    replyMsg = '已經發出黃色光...';
-  } else if (msg.indexOf('紅色') != -1) {
+    replyMsg = '已經發出黃色光';
+  } else if (msg.indexOf('紅色') != -1||msg.indexOf('red') != -1) {
     rgbled.setColor('#ff0000');
     replyMsg = '已經發出紅色光...';
-  } else if (msg.indexOf('綠色') != -1) {
+  } else if (msg.indexOf('綠色') != -1||msg.indexOf('green') != -1) {
     rgbled.setColor('#00ff00');
-    replyMsg = '已經發出綠色光...';
-  } else if (msg.indexOf('藍色') != -1) {
+    replyMsg = '已經發出綠色光';
+  } else if (msg.indexOf('藍色') != -1||msg.indexOf('blue') != -1) {
     rgbled.setColor('#0000ff');
-    replyMsg = '已經發出藍色光...';
-  } else if (msg.indexOf('開燈') != -1) {
+    replyMsg = '已經發出藍色光';
+  } else if (msg.indexOf('開燈') != -1||msg.indexOf('turn on') != -1) {
     rgbled.setColor('#ffffff');
     replyMsg = '開燈囉！';
-  } else if (msg.indexOf('關燈') != -1) {
+  } else if (msg.indexOf('關燈') != -1||msg.indexOf('turn off') != -1) {
     rgbled.setColor('#000000');
     replyMsg = '關起來了！';
   }
@@ -239,11 +239,13 @@ function _webduino(msg) {
 
 
 
-var reply1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~'];
-var reply2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
+var all1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~', '嗨嗨，'];
+var all2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
 
 function _talk1() {
 
+  var reply1 = all1;
+  var reply2 = all2;
   var r1 = Math.floor(Math.random() * (reply1.length));
   var r2 = Math.floor(Math.random() * (reply2.length));
 
@@ -257,7 +259,8 @@ function _talk1() {
 }
 
 function _talk2(msg) {
-
+  var reply1 = all1;
+  var reply2 = all2;
   if (msg.indexOf('早安') != -1) {
     reply1 = reply1.concat(['早安，', '早安呦！', '早安您好，', '早上好，']);
   } else if (msg.indexOf('午安') != -1) {
@@ -265,8 +268,8 @@ function _talk2(msg) {
   } else if (msg.indexOf('晚安') != -1) {
     reply1 = reply1.concat(['晚安，', '晚安您好，', '晚安呦！']);
   } else if (msg.indexOf('再見') != -1 || msg.indexOf('掰掰') != -1 || msg.indexOf('bye') != -1) {
-    reply1 = reply1.concat(['再見囉！', '再會啦！', 'Bye~', '掰掰！']);
-    reply2 = ['有事再找我喔！', '祝你一切順心~', '下次再見 ^_^', '有空再聊喔~'];
+    reply1 = ['再見囉！', '再會啦！', 'Bye~', '掰掰！'];
+    reply2 = ['有事再找我喔！', '祝你一切順心~', '有問題再找我~ ^_^', '有空再聊~'];
   }
 
   var r1 = Math.floor(Math.random() * (reply1.length));
