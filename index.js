@@ -23,10 +23,11 @@ var userId;
 
 var deviceId = '10RrGGer';
 var rgbled;
+var led;
 
 var words = [{
   "name": "pm25",
-  "content": ['pm2.5', 'pm25','pm 2.5','aqi', '空氣污染', '空污', '空汙', '空氣品質', 'pm10', 'pm 10']
+  "content": ['pm2.5', 'pm25', 'pm 2.5', 'aqi', '空氣污染', '空污', '空汙', '空氣品質', 'pm10', 'pm 10']
 }, {
   "name": "pm25Location",
   "content": ['空氣監測站']
@@ -69,7 +70,8 @@ function _bot() {
     botEvent = event;
     userId = event.source.userId;
     if (event.message.type == 'text') {
-      var msg = event.message.text.toLowerCase();
+    	var msg0 = event.message.text;
+      var msg = msg0.toLowerCase();
       replyMsg = '';
       a0 = 0;
       words.forEach(function(row) {
@@ -83,11 +85,11 @@ function _bot() {
               bot.push(userId, '資料查詢中...');
               _japan();
             } else if (row.name == 'device') {
-              _deviceId(msg);
+              _deviceId(msg0);
             } else if (row.name == 'color') {
               _webduino(msg);
             } else if (row.name == 'online') {
-              _webduinoOnline();
+              _webduinoOnline(msg);
             } else if (row.name == 'talk1') {
               _talk1();
             } else if (row.name == 'talk2') {
@@ -192,15 +194,28 @@ function _deviceId(msg) {
   });
 }
 
-function _webduinoOnline() {
-  boardReady({
-    board: 'Smart',
-    device: deviceId,
-    transport: 'mqtt'
-  }, function(board) {
+function _webduinoOnline(msg) {
+	console.log(msg);
+	var pin;
+	var boardSetting;
+  if (msg.indexOf('mark1') != -1) {
+    pin = [9, 10, 11];
+    boardSetting = {
+      device: deviceId
+    };
+  } else {
+    pin = [15, 12, 13];
+    boardSetting = {
+      board: 'Smart',
+      device: deviceId,
+      transport: 'mqtt'
+    };
+  }
+  console.log(pin,boardSetting);
+  boardReady(boardSetting, function(board) {
     board.systemReset();
     board.samplingInterval = 50;
-    rgbled = getRGBLedCathode(board, 15, 12, 13);
+    rgbled = getRGBLedCathode(board, pin[0], pin[1], pin[2]);
     replyMsg = '裝置已上線 ( ' + deviceId + ' )';
     botEvent.reply(replyMsg).then(function(data) {
       console.log(replyMsg);
@@ -211,22 +226,22 @@ function _webduinoOnline() {
 }
 
 function _webduino(msg) {
-  if (msg.indexOf('黃色') != -1||msg.indexOf('yellow') != -1) {
+  if (msg.indexOf('黃色') != -1 || msg.indexOf('yellow') != -1) {
     rgbled.setColor('#ffff00');
     replyMsg = '已經發出黃色光';
-  } else if (msg.indexOf('紅色') != -1||msg.indexOf('red') != -1) {
+  } else if (msg.indexOf('紅色') != -1 || msg.indexOf('red') != -1) {
     rgbled.setColor('#ff0000');
     replyMsg = '已經發出紅色光...';
-  } else if (msg.indexOf('綠色') != -1||msg.indexOf('green') != -1) {
+  } else if (msg.indexOf('綠色') != -1 || msg.indexOf('green') != -1) {
     rgbled.setColor('#00ff00');
     replyMsg = '已經發出綠色光';
-  } else if (msg.indexOf('藍色') != -1||msg.indexOf('blue') != -1) {
+  } else if (msg.indexOf('藍色') != -1 || msg.indexOf('blue') != -1) {
     rgbled.setColor('#0000ff');
     replyMsg = '已經發出藍色光';
-  } else if (msg.indexOf('開燈') != -1||msg.indexOf('turn on') != -1) {
+  } else if (msg.indexOf('開燈') != -1 || msg.indexOf('turn on') != -1) {
     rgbled.setColor('#ffffff');
     replyMsg = '開燈囉！';
-  } else if (msg.indexOf('關燈') != -1||msg.indexOf('turn off') != -1) {
+  } else if (msg.indexOf('關燈') != -1 || msg.indexOf('turn off') != -1) {
     rgbled.setColor('#000000');
     replyMsg = '關起來了！';
   }
