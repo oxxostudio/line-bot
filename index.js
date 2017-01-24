@@ -51,7 +51,10 @@ var words = [{
   "content": ['早安', '午安', '晚安', '再見', '掰掰', 'bye', 'morning', 'night']
 }, {
   "name": "talk3",
-  "content": ['讚', '好棒', '厲害', '棒棒']
+  "content": ['讚', '好棒', '厲害', '棒棒', '太神', '好強']
+}, {
+  "name": "talk4",
+  "content": ['謝謝', 'thx', 'thank', '感謝', '感恩', '感激']
 }];
 var a0 = 0;
 
@@ -73,7 +76,7 @@ function _bot() {
     botEvent = event;
     userId = event.source.userId;
     if (event.message.type == 'text') {
-    	var msg0 = event.message.text;
+      var msg0 = event.message.text;
       var msg = msg0.toLowerCase();
       replyMsg = '';
       a0 = 0;
@@ -99,6 +102,8 @@ function _bot() {
               _talk2(msg);
             } else if (row.name == 'talk3') {
               _talk3();
+            } else if (row.name == 'talk4') {
+              _talk4();
             }
           }
         });
@@ -200,9 +205,9 @@ function _deviceId(msg) {
 }
 
 function _webduinoOnline(msg) {
-	console.log(msg);
-	var pin;
-	var boardSetting;
+  console.log(msg);
+  var pin;
+  var boardSetting;
   if (msg.indexOf('mark1') != -1) {
     pin = [9, 10, 11];
     boardSetting = {
@@ -216,7 +221,7 @@ function _webduinoOnline(msg) {
       transport: 'mqtt'
     };
   }
-  console.log(pin,boardSetting);
+  console.log(pin, boardSetting);
   boardReady(boardSetting, function(board) {
     board.systemReset();
     board.samplingInterval = 50;
@@ -262,6 +267,7 @@ function _webduino(msg) {
 var all1 = ['你好，', '您好，', '哈囉，', 'Hi~', 'Hello~', '嗨嗨，'];
 var all2 = ['請問有事嗎？', '有什麼我可以服務的嗎？', '有事找我嗎？', '有什麼事嗎？', '需要我幫忙什麼嗎？', '想聊聊嗎？'];
 var all3 = ['謝謝啦！', '謝謝稱讚！', '謝謝你！'];
+var all4 = ['不客氣~', '過獎啦！', '哪裡哪裡~'];
 
 function _talk1() {
 
@@ -317,6 +323,21 @@ function _talk3() {
     console.log('error');
   });
 }
+
+function _talk4() {
+
+  var reply1 = all4;
+  var r1 = Math.floor(Math.random() * (reply1.length));
+
+  replyMsg = reply1[r1];
+
+  botEvent.reply(replyMsg).then(function(data) {
+    console.log(replyMsg);
+  }).catch(function(error) {
+    console.log('error');
+  });
+}
+
 function _preventSleeping() {
   clearTimeout(timer);
   httpp.get('http://oxxolinebot.herokuapp.com/');
