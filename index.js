@@ -36,13 +36,13 @@ var words = [{
   "content": ['日幣', '日圓', '日元']
 }, {
   "name": "color",
-  "content": ['紅色', '藍色', '綠色', '黃色', '關燈', '開燈', 'red', 'blue', 'yellow', 'green', 'turn on', 'turn off']
+  "content": ['紅色', '藍色', '綠色', '黃色', 'red', 'blue', 'yellow', 'green','開燈', '關燈', 'turn on', 'turn off']
 }, {
   "name": "device",
   "content": ['裝置id:', '裝置 id:', 'device id:', 'deviceid:']
 }, {
   "name": "online",
-  "content": ['裝置連線']
+  "content": ['裝置連線','rgb','led']
 }, {
   "name": "talk1",
   "content": ['妳好', '你好', '哈囉', 'hi', 'hello', '您好', '嗨', '好久不見']
@@ -204,31 +204,54 @@ function _webduinoOnline(msg) {
   console.log(msg);
   var pin;
   var boardSetting;
-  if (msg.indexOf('mark1') != -1) {
-    pin = [9, 10, 11];
+  if (msg.indexOf('mark1') != -1 && msg.indexOf('led') == -1) {
     boardSetting = {
       device: deviceId
     };
+    boardReady(boardSetting, function(board) {
+      board.systemReset();
+      board.samplingInterval = 50;
+      rgbled = getRGBLedCathode(board, 9, 10, 11);
+      replyMsg = '馬克一號裝置已上線 ( ' + deviceId + ' )，設定三色燈腳位 9,10,11';
+      botEvent.reply(replyMsg).then(function(data) {
+        console.log(replyMsg);
+      }).catch(function(error) {
+        console.log('error');
+      });
+    });
+  } else if (msg.indexOf('mark1') != -1 && msg.indexOf('led') != -1) {
+    boardSetting = {
+      device: deviceId
+    };
+    boardReady(boardSetting, function(board) {
+      board.systemReset();
+      board.samplingInterval = 50;
+      led = getLed(board, 10);
+      replyMsg = '馬克一號裝置已上線 ( ' + deviceId + ' )，設定 led 腳位 10';
+      botEvent.reply(replyMsg).then(function(data) {
+        console.log(replyMsg);
+      }).catch(function(error) {
+        console.log('error');
+      });
+    });
   } else {
-    pin = [15, 12, 13];
     boardSetting = {
       board: 'Smart',
       device: deviceId,
       transport: 'mqtt'
     };
-  }
-  console.log(pin, boardSetting);
-  boardReady(boardSetting, function(board) {
-    board.systemReset();
-    board.samplingInterval = 50;
-    rgbled = getRGBLedCathode(board, pin[0], pin[1], pin[2]);
-    replyMsg = '裝置已上線 ( ' + deviceId + ' )';
-    botEvent.reply(replyMsg).then(function(data) {
-      console.log(replyMsg);
-    }).catch(function(error) {
-      console.log('error');
+    boardReady(boardSetting, function(board) {
+      board.systemReset();
+      board.samplingInterval = 50;
+      rgbled = getRGBLedCathode(board, 15, 12, 13);
+      replyMsg = 'Smart 裝置已上線 ( ' + deviceId + ' )，設定三色燈腳位 15,12,13';
+      botEvent.reply(replyMsg).then(function(data) {
+        console.log(replyMsg);
+      }).catch(function(error) {
+        console.log('error');
+      });
     });
-  });
+  }
 }
 
 function _webduino(msg) {
@@ -245,10 +268,10 @@ function _webduino(msg) {
     rgbled.setColor('#0000ff');
     replyMsg = '已經發出藍色光';
   } else if (msg.indexOf('開燈') != -1 || msg.indexOf('turn on') != -1) {
-    rgbled.setColor('#ffffff');
+    led.on();
     replyMsg = '開燈囉！';
   } else if (msg.indexOf('關燈') != -1 || msg.indexOf('turn off') != -1) {
-    rgbled.setColor('#000000');
+    led.off();
     replyMsg = '關起來了！';
   }
   botEvent.reply(replyMsg).then(function(data) {
